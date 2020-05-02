@@ -1,0 +1,57 @@
+Sub Vba2HtmlForm()
+   Dim ie As New SHDocVw.InternetExplorerMedium
+   Dim inp As HTMLInputElement
+   Dim ul As String
+ 
+   ul = Range("C1").Value
+   ie.Visible = True
+   ie.navigate ul
+   
+   On Error GoTo errorHandler
+   
+   Application.Wait (Now + TimeValue("00:00:01"))
+   While ie.readyState <> 4: DoEvents: Wend
+
+   Set status = ie.document
+   
+   With status
+   'using css selectors
+    .querySelector("Select[id=idOfElement] option[value=someValue]").Selected = True
+    While ie.readyState <> 4: DoEvents: Wend
+    .querySelector("Select[id=idOfElement2] option[value=someValue2]").Selected = True
+    'if class has to be changed
+    Call .getElementById("idOfElement2").setAttribute("class", "blank")
+    While ie.readyState <> 4: DoEvents: Wend
+    
+    ' if class has to have diffrent attributes
+   Call .getElementsByClassName("className1").Item(0).setAttribute("style", "display")
+   While ie.readyState <> 4: DoEvents: Wend
+   
+   'choosing from dropdown list
+   .getElementsByClassName(Range("B2").Value).Item(0).Click
+   .getElementsByClassName(Range("B2").Value).Item(0).Value = Range("C2").Value
+   Call .getElementsByClassName("B2").Item(0).setAttribute("class", "blank")
+   
+   ' loop using cells values
+   For i = 3 To 6
+        .getElementById(Range("B" & CStr(i)).Value).Value = Range("C" & CStr(i)).Value
+        Call .getElementById(Range("B" & CStr(i)).Value).setAttribute("class", "blank")
+        While ie.readyState <> 4: DoEvents: Wend
+   
+   Next i
+        
+    'clicking element
+   .getElementById("element").Click
+    While ie.readyState <> 4: DoEvents: Wend
+   
+   
+   End With
+   
+Exit Sub
+
+errorHandler:
+MsgBox "Try again later"
+
+   
+
+End Sub
